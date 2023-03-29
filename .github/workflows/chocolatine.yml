@@ -40,7 +40,6 @@ jobs:
             annotations="$annotations$error_message"$'\n'
             has_errors=true
           done < coding-style-reports.log
-
           if [ "$has_errors" = true ]; then
             echo "Failing job due to coding style errors"
             exit 1
@@ -87,7 +86,6 @@ jobs:
   push_to_mirror:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
-    needs: ${{ join(needs.*, '.') }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
