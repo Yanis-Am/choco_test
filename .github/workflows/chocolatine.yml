@@ -10,7 +10,7 @@ on:
 
 env:
   MIRROR_URL: ${{ secrets.MIRROR_URL }}
-  EXECUTABLES: "path/to/first_executable,path/to/second_executable"
+  EXECUTABLES: ${{secrets.EXECUTABLE}}
 
 jobs:
   check_coding_style:
