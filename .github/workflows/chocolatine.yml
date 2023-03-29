@@ -85,6 +85,10 @@ jobs:
 
   push_to_mirror:
     if: github.event_name == 'push'
+    needs:
+      - check_coding_style
+      - check_program_compilation
+      - run_tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
