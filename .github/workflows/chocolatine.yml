@@ -25,6 +25,17 @@ jobs:
         run: |
           check.sh $(pwd) $(pwd)
 
+      - name: Show coding style errors
+        if: ${{ job.status == 'failure' }}
+        run: |
+          cat result.xml | python3 /error_anotation.py
+
+      - name: Fail if coding style errors
+        if: ${{ job.status == 'failure' }}
+        run: |
+          echo "Coding style errors detected. Please fix them."
+          exit 1
+
   check_program_compilation:
     needs: check_coding_style
     runs-on: ubuntu-latest
