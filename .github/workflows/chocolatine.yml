@@ -26,8 +26,20 @@ jobs:
           check.sh $(pwd) $(pwd)
 
       - name: Show coding style errors
+        id: Annotations
         run: |
-          cat coding-style-reports.log
+          annotations=""
+          has_errors=false
+          while read -r line; do
+            filepath=$(echo "$line" | cut -d: -f1)
+            line_number=$(echo "$line" | cut -d: -f2)
+            error_code=$(echo "$line" | cut -d: -f3)
+            error_level=$(echo "$error_code" | cut -d- -f1)
+            error_message="Coding style $error_level error: $filepath#L$line_number ($error_code)"
+            echo "::error file=$filepath,line_number::error_message::$error_message"
+            annotations="$annotations$error_message"$'\n'
+            has_errors=true
+          done < coding-style-reports.log
 
   check_program_compilation:
     needs: check_coding_style
@@ -69,7 +81,6 @@ jobs:
 
   push_to_mirror:
     if: github.event_name == 'push'
-    needs: run_tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
