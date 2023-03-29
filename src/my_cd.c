@@ -4,14 +4,13 @@
 ** File description:
 ** cd builtin
 */
-
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include "minishell1.h"
 #include "my.h"
 
-int cd_home(env_node_t **env_list_ptr, char *cwd)
+int cd_home(env_node_t **env_list_ptr, char *cwd                                                    )
 {
     char *home = my_getenv("HOME", env_list_ptr);
     int ret = chdir(home);
