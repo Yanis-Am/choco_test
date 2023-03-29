@@ -1,0 +1,78 @@
+name: Chocolatine Workflow
+
+on:
+  push:
+    branches-ignore:
+      - "ga-ignore-*"
+  pull_request:
+    branches-ignore:
+      - "ga-ignore-*"
+
+env:
+  MIRROR_URL: ${{ secrets.MIRROR_URL }}
+  EXECUTABLES: "path/to/first_executable,path/to/second_executable"
+
+jobs:
+  check_coding_style:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/epitech/coding-style-checker:latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Run coding style checker
+        run: |
+          check.sh $(pwd) $(pwd)
+
+  check_program_compilation:
+    needs: check_coding_style
+    runs-on: ubuntu-latest
+    container:
+      image: epitechcontent/epitest-docker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Launch make
+        run: make
+        timeout-minutes: 2
+
+      - name: Launch make clean
+        run: make clean
+
+      - name: Verify executables
+        run: |
+          for executable in ${EXECUTABLES//,/ }; do
+            if [[ ! -x "$executable" ]]; then
+              echo "$executable is not executable or does not exist"
+              exit 1
+            fi
+          done
+
+  run_tests:
+    needs: check_program_compilation
+    runs-on: ubuntu-latest
+    container:
+      image: epitechcontent/epitest-docker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Launch tests
+        run: make tests_run
+        timeout-minutes: 2
+
+  push_to_mirror:
+    if: github.event_name == 'push'
+    needs: run_tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Push to mirror repository
+        uses: pixta-dev/repository-mirroring-action@v1
+        with:
+          destination_repository: ${{ env.MIRROR_URL }}
+          ssh_private_key: ${{ secrets.GIT_SSH_PRIVATE_KEY }}
