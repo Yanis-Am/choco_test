@@ -56,6 +56,8 @@ lib.a:	$(OBJL)
 compile:	$(OBJ) lib.a
 			gcc -o $(NAME) $(OBJ) $(CFLAGS)
 
+tests_run:
+
 clean:
 	rm -f $(OBJ)
 	rm -f $(OBJL)
