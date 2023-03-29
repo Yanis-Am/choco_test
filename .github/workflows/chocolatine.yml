@@ -36,6 +36,7 @@ jobs:
             error_code=$(echo "$line" | cut -d: -f3)
             error_level=$(echo "$error_code" | cut -d- -f1)
             error_message="$error_level coding style error: $filepath#L${line_number//'\n'/'%0A'}%0A$error_code"
+            echo "::notice file=app.js,line=1,col=5,endColumn=7::Missing semicolon"
             echo ::error file=$filepath,line=$line_number::$error_level coding style error: $filepath#L${line_number}%0A$error_code
             annotations="$annotations$error_message"
             has_errors=true
