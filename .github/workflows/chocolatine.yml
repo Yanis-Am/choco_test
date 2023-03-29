@@ -36,7 +36,7 @@ jobs:
             error_code=$(echo "$line" | cut -d: -f3)
             error_level=$(echo "$error_code" | cut -d- -f1)
             error_message="$error_level coding style error: $filepath#L$line_number%0A$error_code"
-            echo "::error file=$filepath,line=$line_number::error_message::$error_message"
+            echo "::error file=$filepath,line=$line_number::$error_message"
             annotations="$annotations$error_message"$'\n\n'
             has_errors=true
           done < coding-style-reports.log
