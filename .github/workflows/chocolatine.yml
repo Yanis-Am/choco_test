@@ -31,7 +31,7 @@ jobs:
           annotations=""
           has_errors=false
           while read -r line; do
-            filepath=$(echo "$line" | cut -d: -f1| cut -c2-)
+            filepath=$(echo "$line" | cut -d: -f1| cut -c3-)
             line_number=$(echo "$line" | cut -d: -f2)
             error_code=$(echo "$line" | cut -d: -f3)
             error_level=$(echo "$error_code" | cut -d- -f1)
