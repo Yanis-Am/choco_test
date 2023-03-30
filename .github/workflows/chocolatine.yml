@@ -9,8 +9,8 @@ on:
       - "ga-ignore-*"
 
 env:
-  MIRROR_URL: ${{ secrets.MIRROR_URL }}
-  EXECUTABLES: ${{secrets.EXECUTABLE}}
+  MIRROR_URL: "git@github.com:EpitechPromo2027/B-DOP-200-PAR-2-2-chocolatine-yanis.amedjkane.git"
+  EXECUTABLES: "mysh"
 
 jobs:
   check_coding_style:
@@ -26,8 +26,23 @@ jobs:
           check.sh $(pwd) $(pwd)
 
       - name: Show coding style errors
+        id: Annotations
         run: |
-          echo "::error file=app.js,line=1,col=5,endColumn=7::Missing semicolon"
+          annotations=""
+          has_errors=false
+          while read -r line; do
+            filepath=$(echo "$line" | cut -d: -f1| cut -c3-)
+            line_number=$(echo "$line" | cut -d: -f2)
+            error_code=$(echo "$line" | cut -d: -f3)
+            error_level=$(echo "$error_code" | cut -d- -f1)
+            error_message="$error_level coding style error: $filepath#L${line_number//'\n'/'%0A'}%0A$error_code"
+            echo ::error file=$filepath,line=$line_number::$error_level coding style error: $filepath#L${line_number}%0A$error_code
+            annotations="$annotations$error_message"
+            has_errors=true
+          done < coding-style-reports.log
+          if [ "$has_errors" = true ]; then
+            echo "Failing job due to coding style errors"
+          fi
 
   check_program_compilation:
     needs: check_coding_style
