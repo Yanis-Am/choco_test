@@ -98,5 +98,7 @@ jobs:
       - name: Push to mirror repository
         uses: pixta-dev/repository-mirroring-action@v1
         with:
-          destination_repository: ${{ env.MIRROR_URL }}
-          ssh_private_key: ${{ secrets.GIT_SSH_PRIVATE_KEY }}
+          target_repo_url:
+            ${{ env.MIRROR_URL }}
+          ssh_private_key:
+            ${{ secrets.GIT_SSH_PRIVATE_KEY }}
